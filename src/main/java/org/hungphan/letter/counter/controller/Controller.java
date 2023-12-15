@@ -19,8 +19,8 @@ import io.vertx.ext.web.handler.BodyHandler;
 public class Controller extends AbstractVerticle {
 
 	private HttpServer httpServer = null;
-	
-	private ActorRef paragraphSplitterActor = Factory.getInstance().getParagraphSplitterActor();
+
+	private ActorRef letterCounter = Factory.getInstance().getLetterCounter();
 	private ActorRef letterStorage = Factory.getInstance().getLetterStorage();
 
 	@Override
@@ -40,11 +40,11 @@ public class Controller extends AbstractVerticle {
 
 			vertx.eventBus().send("insert_paragraph", paragraph, reply -> {
 				if (reply.succeeded()) {
-					CompletableFuture<Object> future = Patterns.ask(paragraphSplitterActor, paragraph, Duration.ofDays(1)).toCompletableFuture();
+					CompletableFuture<Object> future = Patterns.ask(letterCounter, paragraph.getContent(), Duration.ofDays(1)).toCompletableFuture();
 					future.thenAccept(result -> {
 						System.out.println(result);
 						response.setStatusCode(200);
-						response.end();
+						response.end(reply.result().body().toString());
 					});
 					
 					//Patterns.pipe(future, Factory.getInstance().getSystem().dispatcher()).to(paragraphSplitterActor);

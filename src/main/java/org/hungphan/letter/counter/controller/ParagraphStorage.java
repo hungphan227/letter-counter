@@ -19,7 +19,7 @@ public class ParagraphStorage extends AbstractVerticle {
 			Paragraph paragraph = (Paragraph) message.body();
 			paragraph.setId(++idCount);
 			paragraphStorage.put(paragraph.getId(), paragraph);
-			message.reply("");
+			message.reply(paragraph.getId());
 		});
 		
 		vertx.eventBus().consumer("number_of_paragraphs", (message) -> {
